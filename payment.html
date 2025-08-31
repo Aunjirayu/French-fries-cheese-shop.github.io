@@ -4,13 +4,16 @@
 <head>
   <meta charset="UTF-8">
   <title>หน้าชำระเงิน</title>
-  
+    <link rel="icon" type="image/png" href="โลโก้บนหัว-fotor-2025083021143.png">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
+        font-family: Arial, sans-serif;
       margin: 0;
+      padding: 0;
+      background-image: url("พื้นหลัง.png"); /* ใช้ไฟล์ที่คุณอัปโหลด */
+      background-size: cover;     /* ขยายให้เต็มหน้าจอ */
+      background-position: center; /* จัดกึ่งกลาง */
+      background-attachment: fixed; /* เลื่อนเว็บแล้วพื้นหลังไม่ขยับ */
     }
 
     .header {
@@ -248,12 +251,37 @@
       }
     });
 
-    // Handle form submission
-    document.getElementById("paymentForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const modal = document.getElementById("successModal");
-      modal.style.display = "flex";
-    });
+   // Handle form submission
+document.getElementById("paymentForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const now = new Date();
+  const orderTime = now.toLocaleString("th-TH", {
+    dateStyle: "short",
+    timeStyle: "short"
+  });
+
+  // เตรียมข้อมูลที่ต้องการบันทึก
+  const order = {
+    items: cart,
+    total: total,
+    time: orderTime
+  };
+
+  // ดึงข้อมูลเก่าจาก localStorage
+  let history = JSON.parse(localStorage.getItem("orderHistory")) || [];
+
+  // เพิ่มออเดอร์ใหม่เข้าไป
+  history.push(order);
+
+  // เซฟกลับเข้า localStorage
+  localStorage.setItem("orderHistory", JSON.stringify(history));
+
+  // แสดง Modal ขอบคุณ
+  const modal = document.getElementById("successModal");
+  modal.style.display = "flex";
+});
+
 
     // Close modal and redirect
     function closeModalAndRedirect() {

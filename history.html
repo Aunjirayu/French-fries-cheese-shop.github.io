@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ประวัติการสั่งซื้อ</title>
+    <link rel="icon" type="image/png" href="โลโก้บนหัว-fotor-2025083021143.png">
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url("พื้นหลัง.png"); /* ใช้ไฟล์ที่คุณอัปโหลด */
+      background-size: cover;     /* ขยายให้เต็มหน้าจอ */
+      background-position: center; /* จัดกึ่งกลาง */
+      background-attachment: fixed; /* เลื่อนเว็บแล้วพื้นหลังไม่ขยับ */
+    }
+
+    h1 {
+      text-align: center;
+      color: #d35400;
+    }
+
+    .order {
+      background: #fff;
+      padding: 15px;
+      margin: 15px auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 600px;
+      position: relative;
+    }
+
+    .order p {
+      margin: 5px 0;
+    }
+
+    .item {
+      margin-left: 20px;
+    }
+
+    .back-button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      width: 200px;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background-color: #0056b3;
+    }
+
+    /* ปุ่มลบแต่ละรายการ */
+    .delete-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: #dc3545;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .delete-btn:hover {
+      background-color: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧾 ประวัติการสั่งซื้อ</h1>
+  <div id="historyContainer"></div>
+    
+  <a href="index.html" class="back-button">⬅ กลับหน้าหลัก</a>
+
+  <script>
+    const container = document.getElementById("historyContainer");
+
+    function renderHistory() {
+      container.innerHTML = ''; // เคลียร์ก่อนแสดงใหม่
+      const history = JSON.parse(localStorage.getItem("orderHistory")) || [];
+
+      if (history.length === 0) {
+        container.innerHTML = "<p style='text-align:center;'>ยังไม่มีประวัติการสั่งซื้อ</p>";
+        return;
+      }
+
+      history.forEach((order, index) => {
+        const div = document.createElement("div");
+        div.className = "order";
+        div.innerHTML = `
+          <p><strong>คำสั่งซื้อ #${index + 1}</strong></p>
+          <p><strong>เวลา:</strong> ${order.time}</p>
+          <p><strong>รายการ:</strong></p>
+          ${order.items.map(item => `
+            <div class="item">• ${item.name} - ไซส์ ${item.size} x${item.quantity || 1}</div>
+          `).join('')}
+          <p><strong>รวม:</strong> ${order.total} บาท</p>
+          <button class="delete-btn" data-index="${index}">ลบรายการนี้</button>
+        `;
+        container.appendChild(div);
+      });
+
+      // ผูก event ให้ปุ่มลบแต่ละรายการ
+      document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+          const idx = this.getAttribute("data-index");
+          if(confirm("คุณแน่ใจหรือไม่ที่จะลบคำสั่งซื้อนี้?")) {
+            let history = JSON.parse(localStorage.getItem("orderHistory")) || [];
+            history.splice(idx, 1);  // ลบรายการที่เลือก
+            localStorage.setItem("orderHistory", JSON.stringify(history));
+            renderHistory(); // รีเฟรชหน้าจอใหม่
+          }
+        });
+      });
+    }
+
+    // เรียกแสดงผลตอนโหลดหน้า
+    renderHistory();
+  </script>
+</body>
+</html>
